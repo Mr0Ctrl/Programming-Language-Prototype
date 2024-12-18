@@ -1,20 +1,22 @@
 %{
+#include <stdio.h>
+#include <stdlib.h>
+void yyerror(char *);
+int yylex(void); 
 %}
 
-%token <ivalue> INTEGER
+%union {
+    int ival;
+    float fval;
+    char* sval;
+}
+
+%token <ival> INTEGER
 %token <fval> FLOAT
-
 %token <sval> STRING
-
-%token <svalue> INT_VAR
-%token <svalue> FLOAT_VAR
-
-%token <svalue> STR_VAR
-
+%token <sval> IDENTIFIER
 %token ASSIGN
-
 %token NLINE
-
 %token LOOP
 %token BREAK
 %token IF
@@ -24,18 +26,52 @@
 %left '*' '/'
 
 %nonassoc UMINUS
+
 %%
 
-program:
-    lines
+program :
+    statement_list
     ;
 
-lines:
-    line
-    | lines line
+statement_list:
+    statement
+    | statement_list statement
     ;
 
-line:
-    
+statement : 
+    statement NLINE
+    | expr
+    | assignment
     ;
+
+expr : 
+    INTEGER
+    | IDENTIFIER
+    | expr '+' expr
+    | expr '-' expr
+    | expr '*' expr
+    | expr '/' expr
+    | expr '<' expr
+    | expr '>' expr
+    | expr '=' expr
+    | '('expr')'
+    ;
+
+assignment : 
+    IDENTIFIER ASSIGN expr
+    ;
+
+
+
+
 %%
+
+void yyerror(char *s) {
+    fprintf(stderr, "%s\n", s);
+    return;
+}
+
+int main(void) {
+    yyparse();
+    return 0;
+}

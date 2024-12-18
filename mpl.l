@@ -1,47 +1,13 @@
 %{
-#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+
 #include "mpl.tab.h"
-int line_number = 1; // Satır sayacı
+void yyerror(char *);
+
+#include <stdlib.h>
 %}
 
 %%
-
-"i"[A-Z][a-zA-Z]*          {
-        yylval.svalue = strdup(yytext+1); 
-        return INT_VAR;
-}
-
-"f"[A-Z][a-zA-Z]*          {
-        yylval.svalue = strdup(yytext+1); 
-        return FLOAT_VAR;
-}
-
-"s"[A-Z][a-zA-Z]*          {
-        yylval.svalue = strdup(yytext+1); 
-        return STR_VAR;
-}
-
-0|([1-9][0-9]*)         {
-        yylval.ivalue = atoi(yytext);
-        return INTEGER;
-    }
-
-(0|([1-9][0-9]*))?\.[0-9]+  {
-        yylval.fval = atof(yytext);
-        return FLOAT;
-    }
-\"[^\n"]*\"                 {
-        yylval.sval = strndup(yytext + 1, yyleng - 2);
-        if (yylval.sval == NULL) {
-            fprintf(stderr, "Bellek hatası!\n");
-            exit(1);
-        }
-        return STRING;    
-}
-
-[+-*/()=<>&|!;]  {return *yytext;}
 
 ":="            { return ASSIGN; }
 
@@ -49,12 +15,31 @@ int line_number = 1; // Satır sayacı
 "kop"           { return BREAK; }
 "ise"           { return IF; }
 
-\n              { line_number++; return NLINE; }  // Yeni komut satırı
+[a-z][a-zA-Z1-9]*          {
+        yylval.sval = strdup(yytext+1); 
+        return IDENTIFIER;
+}
+
+0|([1-9][0-9]*)         {
+        yylval.ival = atoi(yytext);
+        return INTEGER;
+    }
+
+(0|([1-9][0-9]*))?\.[0-9]+  {
+        yylval.fval = atof(yytext);
+        return FLOAT;
+    }
+
+
+[-+*/()=<>&|!;]  {return *yytext;}
+
+
+\n              { return NLINE; }  // Yeni komut satırı
 [ \t]+          ; // Boşlukları yoksay
-.               { printf("Tanınmayan karakter: %s, Satır: %d\n", yytext, line_number); }
+.               ;yyerror("Unknown character");
 
 %%
 
 int yywrap(void) {
-    return 1;
+return 1;
 }
