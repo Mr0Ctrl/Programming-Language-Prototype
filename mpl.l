@@ -1,22 +1,21 @@
 %{
 #include <string.h>
-
 #include "mpl.tab.h"
 void yyerror(char *);
-
 #include <stdlib.h>
+int line_number = 1; // Satır sayacını ekledik
 %}
+
 
 %%
 
 ":="            { return ASSIGN; }
-
 "yine"          { return LOOP; }
 "kop"           { return BREAK; }
 "ise"           { return IF; }
 
 [a-z][a-zA-Z1-9]*          {
-        yylval.sval = strdup(yytext+1); 
+        yylval.sval = strdup(yytext); 
         return IDENTIFIER;
 }
 
@@ -30,16 +29,15 @@ void yyerror(char *);
         return FLOAT;
     }
 
+[-+*/()=<>&|!;:]  {return *yytext;}
 
-[-+*/()=<>&|!;]  {return *yytext;}
-
-
-\n              { return NLINE; }  // Yeni komut satırı
+\n              { line_number++; return NLINE; }
+"//".*          ; // Boş işlem (yorumları yoksay)
 [ \t]+          ; // Boşlukları yoksay
-.               ;yyerror("Unknown character");
+.               { yyerror("Unknown character");}
 
 %%
 
 int yywrap(void) {
-return 1;
+    return 1;
 }

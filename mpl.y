@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 void yyerror(char *);
-int yylex(void); 
+int yylex(void);
+
+extern int line_number; // lex dosyasında tanımlanan satır numarasını çağır
 %}
 
 %union {
@@ -13,10 +15,9 @@ int yylex(void);
 
 %token <ival> INTEGER
 %token <fval> FLOAT
-%token <sval> STRING
 %token <sval> IDENTIFIER
 %token ASSIGN
-%token NLINE
+%token NLINE TAB
 %token LOOP
 %token BREAK
 %token IF
@@ -34,18 +35,36 @@ program :
     ;
 
 statement_list:
-    statement
+    statement NLINE
     | statement_list statement
     ;
 
-statement : 
-    statement NLINE
-    | expr
+statement :
+    NLINE
+    | statement ';'
     | assignment
+    | condition
+    | loop
+    | BREAK
+    | expr
     ;
 
+assignment : 
+    IDENTIFIER ASSIGN expr
+    ;
+
+condition:
+    IF '('expr')' NLINE statement_list ':'
+    ;
+
+loop:
+    LOOP NLINE statement_list ':'
+    | LOOP '('expr')' NLINE statement_list ':'
+    ;
+
+
 expr : 
-    INTEGER
+    numeric
     | IDENTIFIER
     | expr '+' expr
     | expr '-' expr
@@ -54,20 +73,16 @@ expr :
     | expr '<' expr
     | expr '>' expr
     | expr '=' expr
-    | '('expr')'
     ;
 
-assignment : 
-    IDENTIFIER ASSIGN expr
-    ;
-
-
-
+numeric:
+    INTEGER
+    | FLOAT
 
 %%
 
 void yyerror(char *s) {
-    fprintf(stderr, "%s\n", s);
+    fprintf(stderr, "Satır %d: Syntax hatası: %s\n", line_number, s);
     return;
 }
 
