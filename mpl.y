@@ -1,14 +1,47 @@
 %{
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
- 
-#include "system.h" 
 
 void yyerror(char *);
 int yylex(void);
 
+
 extern int line_number; // lex dosyasında tanımlanan satır numarasını çağır
+
+//#include "dataStr.h"
+//
+/*
+struct SymbolTable {
+    char *name;
+    data value;
+};
+
+struct SymbolTable symbolTable[100];
+int symbolTableIndex = 0;
+extern int line_number;
+
+
+int findSymbol(char *name) {
+    for(int i =0 ; i < symbolTableIndex; i++){
+        if(strcmp(symbolTable[i].name, name) == 0){
+            return i;
+        }
+    }
+    return -1;
+}
+
+int addSymbol(char *name, char *type) {
+    int existing = findSymbol(name);
+    if(existing != -1) return existing;
+    symbolTable[symbolTableIndex].name = strdup(name);
+    symbolTable[symbolTableIndex].type = strdup(type);
+    return symbolTableIndex++;
+}*/
+//
+
+
 
 %}
 
@@ -18,7 +51,24 @@ extern int line_number; // lex dosyasında tanımlanan satır numarasını çağ
     char    cval;
     bool    bval;
     char*   sval;
-    Data    data;
+    struct
+    {
+        enum
+        {
+            tBool,
+            tInt,
+            tFloat,
+            tChar
+        } type;
+        union
+        {
+            int ival;
+            float fval;
+            char cval;
+            bool bval;
+        } value;
+
+    } eData;
 }
 
 %token <ival> INTEGER
@@ -37,10 +87,10 @@ extern int line_number; // lex dosyasında tanımlanan satır numarasını çağ
 
 %nonassoc UMINUS
 
-%type <data> numeric expr statement
-%type <data> math_op compare_op logic_op
+%type <eData> numeric expr statement
+%type <eData> math_op compare_op logic_op
 
-%type <data> assignment condition loop BREAK NLINE IF LOOP
+%type <eData> assignment condition loop BREAK NLINE IF LOOP
 
 %%
 
@@ -70,6 +120,9 @@ statement :
 
 assignment : 
     IDENTIFIER ASSIGN expr
+    {
+
+    }
     ;
 
 condition:
@@ -83,15 +136,27 @@ loop:
 
 
 expr : 
-    numeric
-    | math_op
-    | compare_op
-    | logic_op
-    | IDENTIFIER
+    numeric         {$$ = $1;}
+    | math_op       {$$ = $1;}
+    | compare_op    
+    | logic_op      
+    | IDENTIFIER    
     ;
 
 math_op:
-    expr '+' expr
+    expr '+' expr   
+    {
+        if($1.type  == $3.type){
+            $$.type = $1.type;
+            if($1.type == tInt){
+                $$.value.ival = $1.value.ival + $3.value.ival;
+            }
+
+            if($1.type == tFloat){
+                $$.value.fval = $1.value.fval + $3.value.fval;
+            }
+        }
+    }
     | expr '-' expr
     | expr '*' expr
     | expr '/' expr
@@ -107,7 +172,8 @@ logic_op:
     ;
 
 numeric:
-    INTEGER {
+    INTEGER 
+    {
         $$.type = tInt;
         $$.value.ival = $1;
     }

@@ -1,9 +1,15 @@
 %{
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
 #include <string.h>
 #include "mpl.tab.h"
+
+
 void yyerror(char *);
-#include <stdlib.h>
 int line_number = 1; // Satır sayacını ekledik
+
 %}
 
 

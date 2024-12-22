@@ -1,4 +1,9 @@
+#ifndef INFRASTRUCTURE_H
+#define INFRASTRUCTURE_H
+
 #include <stdbool.h>
+#include <stdlib.h>
+
 
 typedef enum
 {
@@ -18,4 +23,7 @@ typedef struct
         char cval;
         bool bval;
     } value;
-} Data;
+
+} data;
+
+#endif // INFRASTRUCTURE_H

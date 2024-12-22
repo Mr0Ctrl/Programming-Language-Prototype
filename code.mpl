@@ -2,7 +2,7 @@
 
 xa := 10     //değişken tipi gelen tipe göre otomatik belirlenecek
 yb := 3   // atama operasyonu ":=" ifadesi ile yapılacak
-zc := x + y; // sonunda ; olan ifadeler taşıdıkları değeri ekrana yazdıracak
+zc := x + y ; // sonunda ; olan ifadeler taşıdıkları değeri ekrana yazdıracak
 
 ise (x > 5) 
     yb := 3 * 2 
