@@ -1,16 +1,21 @@
-x := 10     //değişken tipi gelen tipe göre otomatik belirlenecek
-y := 3.14   // atama operasyonu ":=" ifadesi ile yapılacak
-z := x + y; // sonunda ; olan ifadeler taşıdıkları değeri ekrana yazdıracak
+1+1;
+
+xa := 10     //değişken tipi gelen tipe göre otomatik belirlenecek
+yb := 3   // atama operasyonu ":=" ifadesi ile yapılacak
+zc := x + y; // sonunda ; olan ifadeler taşıdıkları değeri ekrana yazdıracak
 
 ise (x > 5) 
-    y := 3 * 2 
+    yb := 3 * 2 
 :
 
 yine // dögüler aksi idda edilmediği sürece true ile çalışaccak
-    x = x + 1;
-    ise (x > 15)
+    xa = xa + 1;
+    ise (xa > 15)
         kop
     ::
 
-1 + 1 
+1 + 1
+
+aa := xa;
+
 
