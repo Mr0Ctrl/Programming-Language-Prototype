@@ -3,44 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 void yyerror(char *);
 int yylex(void);
 
-
-extern int line_number; // lex dosyasında tanımlanan satır numarasını çağır
-
-//#include "dataStr.h"
-//
-/*
-struct SymbolTable {
-    char *name;
-    data value;
-};
+#include "base.h"
 
 struct SymbolTable symbolTable[100];
 int symbolTableIndex = 0;
 extern int line_number;
-
-
-int findSymbol(char *name) {
-    for(int i =0 ; i < symbolTableIndex; i++){
-        if(strcmp(symbolTable[i].name, name) == 0){
-            return i;
-        }
-    }
-    return -1;
-}
-
-int addSymbol(char *name, char *type) {
-    int existing = findSymbol(name);
-    if(existing != -1) return existing;
-    symbolTable[symbolTableIndex].name = strdup(name);
-    symbolTable[symbolTableIndex].type = strdup(type);
-    return symbolTableIndex++;
-}*/
-//
-
 
 
 %}
@@ -51,29 +23,12 @@ int addSymbol(char *name, char *type) {
     char    cval;
     bool    bval;
     char*   sval;
-    struct
-    {
-        enum
-        {
-            tBool,
-            tInt,
-            tFloat,
-            tChar
-        } type;
-        union
-        {
-            int ival;
-            float fval;
-            char cval;
-            bool bval;
-        } value;
-
-    } eData;
+    struct Data* dataE;
 }
 
 %token <ival> INTEGER
 %token <fval> FLOAT
-%token <data> IDENTIFIER
+%token <sval> IDENTIFIER
 
 %token ASSIGN
 %token NLINE TAB
@@ -87,10 +42,10 @@ int addSymbol(char *name, char *type) {
 
 %nonassoc UMINUS
 
-%type <eData> numeric expr statement
-%type <eData> math_op compare_op logic_op
+%type <dataE> numeric expr statement
+%type <dataE> math_op compare_op logic_op
 
-%type <eData> assignment condition loop BREAK NLINE IF LOOP
+%type <dataE> assignment condition loop BREAK NLINE IF LOOP
 
 %%
 
@@ -105,12 +60,13 @@ statement_list:
 
 statement :
     NLINE
-    | statement ';' {
-        if($1.type == tBool ){printf("%s\n", $1.value.bval ? "true" : "false");}
-        if($1.type == tInt  ){printf("%d\n", $1.value.ival);}
-        if($1.type == tFloat){printf("%f\n", $1.value.fval);}
-        if($1.type == tChar ){printf("%c\n", $1.value.cval);}
-    }
+    | statement ';' 
+        {
+        if($1->type == tBool ){printf("%s\n", $1->value.bval ? "true" : "false");}
+        if($1->type == tInt  ){printf("%d\n", $1->value.ival);}
+        if($1->type == tFloat){printf("%f\n", $1->value.fval);}
+        if($1->type == tChar ){printf("%c\n", $1->value.cval);}
+        }
     | assignment
     | condition
     | loop
@@ -121,7 +77,10 @@ statement :
 assignment : 
     IDENTIFIER ASSIGN expr
     {
-
+        int symbolIndex = addSymbol($1, (int)$3->type);
+        symbolTable[symbolIndex].data->value = $3->value;
+        free($3);
+        $$ = symbolTable[symbolIndex].data;
     }
     ;
 
@@ -136,30 +95,25 @@ loop:
 
 
 expr : 
-    numeric         {$$ = $1;}
-    | math_op       {$$ = $1;}
+    numeric         //{$$ = $1;}
+    | math_op       //{$$ = $1;}
     | compare_op    
     | logic_op      
     | IDENTIFIER    
+    {
+        $$ = malloc(sizeof(struct Data));
+        int i =findSymbol($1);
+        if(i == -1){yyerror("tanınmayan ifade"); return;}
+        $$->type = symbolTable[i].data->type;
+        $$->value = symbolTable[i].data->value;
+    }  
     ;
 
 math_op:
-    expr '+' expr   
-    {
-        if($1.type  == $3.type){
-            $$.type = $1.type;
-            if($1.type == tInt){
-                $$.value.ival = $1.value.ival + $3.value.ival;
-            }
-
-            if($1.type == tFloat){
-                $$.value.fval = $1.value.fval + $3.value.fval;
-            }
-        }
-    }
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
+    expr '+' expr   {$$ = basicMOp('+',$1 ,$3);}
+    | expr '-' expr {$$ = basicMOp('-',$1 ,$3);}
+    | expr '*' expr {$$ = basicMOp('*',$1 ,$3);}
+    | expr '/' expr {$$ = basicMOp('/',$1 ,$3);}
     ;
 compare_op:
     expr '<' expr
@@ -173,14 +127,16 @@ logic_op:
 
 numeric:
     INTEGER 
-    {
-        $$.type = tInt;
-        $$.value.ival = $1;
+    {   
+        $$ = malloc(sizeof(struct Data));
+        $$->type = tInt;
+        $$->value.ival = $1;
     }
     | FLOAT
     {
-        $$.type = tFloat;
-        $$.value.fval = $1;
+        $$ = malloc(sizeof(struct Data));
+        $$->type = tFloat;
+        $$->value.fval = $1;
     }
     ;
     

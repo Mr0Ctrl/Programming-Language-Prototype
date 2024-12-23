@@ -1,0 +1,8 @@
+lex.yy.c
+mpl
+mpl.tab.c
+mpl.tab.h
+.vscode/settings.json
+/calc-from-doc
+/old
+
