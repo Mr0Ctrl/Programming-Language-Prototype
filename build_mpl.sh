@@ -5,6 +5,7 @@ rm mpl.tab.h
 rm lex.yy.c
 rm mpl
 
+
 # Bison dosyasını çalıştır
 bison -d mpl.y
 if [ $? -eq 0 ]; then
@@ -18,7 +19,7 @@ if [ $? -eq 0 ]; then
 fi
 
 # GCC ile derleme işlemi yap
-gcc -I . lex.yy.c mpl.tab.c -o mpl 
+gcc lex.yy.c mpl.tab.c -o mpl 
 
 # Derleme tamamlandıysa mesaj ver
 if [ $? -eq 0 ]; then

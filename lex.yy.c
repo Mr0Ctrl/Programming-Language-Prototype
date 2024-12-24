@@ -460,13 +460,19 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "mpl.l"
 #line 2 "mpl.l"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
 #include <string.h>
 #include "mpl.tab.h"
+
+
 void yyerror(char *);
-#include <stdlib.h>
 int line_number = 1; // Satır sayacını ekledik
-#line 469 "lex.yy.c"
-#line 470 "lex.yy.c"
+
+#line 475 "lex.yy.c"
+#line 476 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -683,10 +689,10 @@ YY_DECL
 		}
 
 	{
-#line 10 "mpl.l"
+#line 16 "mpl.l"
 
 
-#line 690 "lex.yy.c"
+#line 696 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -745,27 +751,27 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 12 "mpl.l"
+#line 18 "mpl.l"
 { return ASSIGN; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 13 "mpl.l"
+#line 19 "mpl.l"
 { return LOOP; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 14 "mpl.l"
+#line 20 "mpl.l"
 { return BREAK; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 15 "mpl.l"
+#line 21 "mpl.l"
 { return IF; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "mpl.l"
+#line 23 "mpl.l"
 {
         yylval.sval = strdup(yytext); 
         return IDENTIFIER;
@@ -773,7 +779,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 22 "mpl.l"
+#line 28 "mpl.l"
 {
         yylval.ival = atoi(yytext);
         return INTEGER;
@@ -781,7 +787,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 27 "mpl.l"
+#line 33 "mpl.l"
 {
         yylval.fval = atof(yytext);
         return FLOAT;
@@ -789,36 +795,36 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 32 "mpl.l"
+#line 38 "mpl.l"
 {return *yytext;}
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 34 "mpl.l"
+#line 40 "mpl.l"
 { line_number++; return NLINE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 35 "mpl.l"
+#line 41 "mpl.l"
 ; // Boş işlem (yorumları yoksay)
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 36 "mpl.l"
+#line 42 "mpl.l"
 ; // Boşlukları yoksay
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 37 "mpl.l"
+#line 43 "mpl.l"
 { yyerror("Unknown character");}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 39 "mpl.l"
+#line 45 "mpl.l"
 ECHO;
 	YY_BREAK
-#line 822 "lex.yy.c"
+#line 828 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1823,7 +1829,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 39 "mpl.l"
+#line 45 "mpl.l"
 
 
 int yywrap(void) {

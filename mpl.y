@@ -85,7 +85,25 @@ assignment :
     ;
 
 condition:
-    IF '('expr')' NLINE statement_list ':'
+    IF '('expr')' NLINE statement_list ':' 
+    {
+        $$ = malloc(sizeof(struct Data));
+        $$->type = tBool;
+
+        if($3->type == tInt)
+        {
+            $$->value.bval = ($3->value.ival != 0);
+        }
+        if($3->type == tFloat)
+        {
+            $$->value.bval = ($3->value.fval != 0.0);
+        }
+        
+        if($$->value.bval)
+        {
+            printf("??\n");
+        }
+    }
     ;
 
 loop:
@@ -103,7 +121,7 @@ expr :
     {
         $$ = malloc(sizeof(struct Data));
         int i =findSymbol($1);
-        if(i == -1){yyerror("tanınmayan ifade"); return;}
+        if(i == -1){yyerror("tanınmayan ifade");}
         $$->type = symbolTable[i].data->type;
         $$->value = symbolTable[i].data->value;
     }  
