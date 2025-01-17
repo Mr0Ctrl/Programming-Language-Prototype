@@ -1,9 +1,5 @@
 #!/bin/bash
-# eski dosyaları sill
-rm mpl.tab.c
-rm mpl.tab.h
-rm lex.yy.c
-rm mpl
+
 
 
 # Bison dosyasını çalıştır
@@ -27,3 +23,9 @@ if [ $? -eq 0 ]; then
 else
     echo "Derleme başarısız!"
 fi
+
+# dosyaları sill
+rm mpl.tab.c
+rm mpl.tab.h
+rm lex.yy.c
+

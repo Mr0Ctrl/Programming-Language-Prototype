@@ -36,9 +36,11 @@ extern int line_number;
 %token BREAK
 %token IF
 
-%left '=' '<' '>'
+%right ASSIGN
+%left '<' '>' '='
 %left '+' '-'
 %left '*' '/'
+%left '&' '|'
 
 %nonassoc UMINUS
 
